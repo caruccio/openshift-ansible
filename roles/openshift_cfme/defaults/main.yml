@@ -1,13 +1,28 @@
 ---
-# Namespace for the CFME project (Note: changed post-3.6 to use
-# reserved 'openshift-' namespace prefix)
+# Namespace for the CFME project
 openshift_cfme_project: openshift-cfme
 # Namespace/project description
 openshift_cfme_project_description: ManageIQ - CloudForms Management Engine 4.6
-# Basic user assigned the `admin` role for the project
-openshift_cfme_user: cfme
-# Project system account for enabling privileged pods
-openshift_cfme_service_account: "system:serviceaccount:{{ openshift_cfme_project }}:default"
+# [CONSTANT] Service Accounts
+openshift_cfme_users:
+  - name: miq-anyuid
+    description: can run pods as root
+    resource_kind: anyuid
+  - name: miq-orchestrator
+    description: scales other pods
+    resource_kind: anyuid
+  - name: miq-privileged
+    description: ansible image account
+    resource_kind: privileged
+  - name: miq-sysadmin
+    description: can run pods with SYS_ADMIN cap, systemd, and dbus
+    resource_kind: miq-sysadmin
+
+
+# Allowed options presently: nfs, external, preconfigured
+openshift_cfme_storage_class: preconfigured
+
+
 # All the required exports
 openshift_cfme_pv_exports:
   - miq-pv01
@@ -25,8 +40,6 @@ openshift_cfme_pv_data:
     pv_template: miq-pv-server.yaml
     pv_label: CFME Server PV
 
-# Tuning parameter to use more than 5 images at once from an ImageStream
-openshift_cfme_maxImagesBulkImportedPerRepository: 100
 # TODO: Refactor '_install_app' variable. This is just for testing but
 # maybe in the future it should control the entire yes/no for CFME.
 #

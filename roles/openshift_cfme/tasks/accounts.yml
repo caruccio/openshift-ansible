@@ -1,0 +1,27 @@
+---
+# This role task file is responsible for user/system account creation,
+# and ensuring correct access is provided as required.
+
+
+- name: Ensure the CFME users exist
+  oc_user:
+    state: present
+    username: "{{ item.name }}"
+    full_name: "OpenShift CFME {{ item.name }} User"
+  with_items:
+    - "{{ openshift_cfme_users }}"
+
+
+- name: cfme TODO
+  debug:
+    msg: TODO - Create the miq-sysadmin SCC from template before giving privs
+
+- name: Ensure the CFME service accounts are privileged
+  oc_adm_policy_user:
+    namespace: "{{ openshift_cfme_project }}"
+    user: "{{ item.name }}"
+    resource_kind: scc
+    resource_name: "{{ item.resource_kind }}"
+    state: present
+  with_items:
+    - "{{ openshift_cfme_users }}"

@@ -1,26 +1,16 @@
 ---
-######################################################################
+######################################################################)
 # Users, projects, and privileges
 
-# - name: Ensure the CFME user exists
-#   oc_user:
-#     state: present
-#     username: "{{ openshift_cfme_user }}"
+- name: "Ensure the CFME '{{ openshift_cfme_project }}' namespace exists"
+  oc_project:
+    state: present
+    name: "{{ openshift_cfme_project }}"
+    display_name: "{{ openshift_cfme_project_description }}"
 
-# - name: Ensure the CFME namespace exists with CFME user as admin
-#   oc_project:
-#     state: present
-#     name: "{{ openshift_cfme_project }}"
-#     display_name: "{{ openshift_cfme_project_description }}"
-#     admin: "{{ openshift_cfme_user }}"
+- name: Create and Authorize CFME Accounts
+  include: accounts.yml
 
-# - name: Ensure the CFME namespace service account is privileged
-#   oc_adm_policy_user:
-#     namespace: "{{ openshift_cfme_project }}"
-#     user: "{{ openshift_cfme_service_account }}"
-#     resource_kind: scc
-#     resource_name: privileged
-#     state: present
 
 # ######################################################################
 # # NFS
