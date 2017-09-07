@@ -3,7 +3,7 @@
 # reserved 'openshift-' namespace prefix)
 openshift_cfme_project: openshift-cfme
 # Namespace/project description
-openshift_cfme_project_description: ManageIQ - CloudForms Management Engine
+openshift_cfme_project_description: ManageIQ - CloudForms Management Engine 4.6
 # Basic user assigned the `admin` role for the project
 openshift_cfme_user: cfme
 # Project system account for enabling privileged pods
