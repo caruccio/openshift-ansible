@@ -8,18 +8,18 @@ openshift_cfme_users:
   - name: tim
     description: cfme system user that can run pods as root
     resource_kind: anyuid
-  # - name: miq-anyuid
-  #   description: can run pods as root
-  #   resource_kind: anyuid
-  # - name: miq-orchestrator
-  #   description: scales other pods
-  #   resource_kind: anyuid
-  # - name: miq-privileged
-  #   description: ansible image account
-  #   resource_kind: privileged
-  # - name: miq-sysadmin
-  #   description: can run pods with SYS_ADMIN cap, systemd, and dbus
-  #   resource_kind: miq-sysadmin
+  - name: miq-anyuid
+    description: can run pods as root
+    resource_kind: anyuid
+  - name: miq-orchestrator
+    description: scales other pods
+    resource_kind: anyuid
+  - name: miq-privileged
+    description: ansible image account
+    resource_kind: privileged
+  - name: miq-sysadmin
+    description: can run pods with SYS_ADMIN cap, systemd, and dbus
+    resource_kind: miq-sysadmin
 
 
 # Allowed options presently: nfs, external, preconfigured

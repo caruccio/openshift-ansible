@@ -2,85 +2,57 @@
 # This role task file is responsible for user/system account creation,
 # and ensuring correct access is provided as required.
 
-- name: See if an existing user exists
+# TODO: This is currently not idempotent, bug report will be filed
+# after this. Currently this task will return 'changed' if it just
+# created a user, updated a user, or doesn't modify a user at
+# all. Seems to be failing some kind of 'does it need updating' test
+# condition and running the replace command regardless.
+- name: Ensure the CFME system users exist
   oc_user:
+    state: present
+    username: "{{ item.name }}"
+    full_name: "{{ item.description }}"
+  with_items:
+    - "{{ openshift_cfme_users }}"
+
+
+
+- name: Check if the miq-sysadmin scc exists
+  oc_obj:
     state: list
-    username: tim
-  register: cfme_if_tim_user_exists
-
-- name: See if a non-existant user exists
-  oc_user:
-    state: list
-    username: alicia
-
-- name: What is the 'existing user check' result?
-  debug:
-    var: cfme_if_tim_user_exists
+    kind: scc
+    name: miq-sysadmin
+  register: miq_sysadmin_scc_exists
 
 
-- name: "Ensure the CFME system users exist"
-  oc_user:
+- name: Copy the miq-sysadmin SCC to the cluster
+  copy:
+    src: miq-sysadmin.yaml
+    dest: "{{ template_dir }}"
+  when:
+    - miq_sysadmin_scc_exists.results.results | length == 1
+    - miq_sysadmin_scc_exists.results.results[0] == {}
+
+
+- name: debug miq-sysadmin scc does not exist
+  command: "ls -a {{ template_dir }}"
+  when:
+    - miq_sysadmin_scc_exists.results.results | length == 1
+    - miq_sysadmin_scc_exists.results.results[0] == {}
+
+- name: Ensure the CFME miq-sysadmin SCC exists
+  oc_obj:
     state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
-- name: "Ensure the CFME system users exist"
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
-
-- name: "Ensure the CFME system users exist"
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
-
-
-- name: "Ensure the CFME system users exist"
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
-- name: "Ensure the CFME system users exist"
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
-- name: "Ensure the CFME system users exist"
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-  # when:
-  #   - not cfme_if_tim_user_exists.results.0 == {}
-
+    name: miq-sysadmin
+    namespace: "{{ openshift_cfme_project }}"
+    kind: scc
+    files:
+      - "{{ template_dir }}/miq-sysadmin.yaml"
+    delete_after: True
+  run_once: True
+  when:
+    - miq_sysadmin_scc_exists.results.results | length == 1
+    - miq_sysadmin_scc_exists.results.results[0] == {}
 
 
 
@@ -90,16 +62,6 @@
 
 
 
-# - name: "Ensure the CFME sysadmin SCC exists"
-#   oc_obj:
-#     state: present
-#     template_name: miq-sysadmin
-#     namespace: "{{ openshift_cfme_project }}"
-#     kind: scc
-#     files:
-#       - "{{ template_dir }}/{{ item.pv_template }}"
-#     create: True
-#   run_once: True
 
 
 # - name: "Ensure the CFME '{{ item.name }}' service account is privileged"
