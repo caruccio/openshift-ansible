@@ -15,8 +15,6 @@
   with_items:
     - "{{ openshift_cfme_users }}"
 
-
-
 - name: Check if the miq-sysadmin scc exists
   oc_obj:
     state: list
@@ -24,18 +22,11 @@
     name: miq-sysadmin
   register: miq_sysadmin_scc_exists
 
-
+# TODO: Cleanup when conditions
 - name: Copy the miq-sysadmin SCC to the cluster
   copy:
     src: miq-sysadmin.yaml
     dest: "{{ template_dir }}"
-  when:
-    - miq_sysadmin_scc_exists.results.results | length == 1
-    - miq_sysadmin_scc_exists.results.results[0] == {}
-
-
-- name: debug miq-sysadmin scc does not exist
-  command: "ls -a {{ template_dir }}"
   when:
     - miq_sysadmin_scc_exists.results.results | length == 1
     - miq_sysadmin_scc_exists.results.results[0] == {}
@@ -53,23 +44,3 @@
   when:
     - miq_sysadmin_scc_exists.results.results | length == 1
     - miq_sysadmin_scc_exists.results.results[0] == {}
-
-
-
-# - name: cfme TODO
-#   debug:
-#     msg: TODO - Create the miq-sysadmin SCC from template before giving privs
-
-
-
-
-
-# - name: "Ensure the CFME '{{ item.name }}' service account is privileged"
-#   oc_adm_policy_user:
-#     namespace: "{{ openshift_cfme_project }}"
-#     user: "{{ item.name }}"
-#     resource_kind: scc
-#     resource_name: "{{ item.resource_kind }}"
-#     state: present
-#   with_items:
-#     - "{{ openshift_cfme_users }}"
