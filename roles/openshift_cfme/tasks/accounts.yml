@@ -7,16 +7,9 @@
 # created a user, updated a user, or doesn't modify a user at
 # all. Seems to be failing some kind of 'does it need updating' test
 # condition and running the replace command regardless.
-- name: Ensure the CFME system users exist
-  oc_user:
-    state: present
-    username: "{{ item.name }}"
-    full_name: "{{ item.description }}"
-  with_items:
-    - "{{ openshift_cfme_users }}"
-
 - name: Check if the miq-sysadmin scc exists
   oc_obj:
+    namespace: "{{ openshift_cfme_project }}"
     state: list
     kind: scc
     name: miq-sysadmin
@@ -44,3 +37,29 @@
   when:
     - miq_sysadmin_scc_exists.results.results | length == 1
     - miq_sysadmin_scc_exists.results.results[0] == {}
+
+- name: Ensure the CFME system users exist
+  oc_serviceaccount:
+    namespace: "{{ openshift_cfme_project }}"
+    state: present
+    name: "{{ item.name }}"
+  with_items:
+    - "{{ openshift_system_account_sccs }}"
+
+- name: Ensure the CFME system accounts have all the required SCCs
+  oc_adm_policy_user:
+    namespace: "{{ openshift_cfme_project }}"
+    user: "system:serviceaccount:{{ openshift_cfme_project }}:{{ item.name }}"
+    resource_kind: scc
+    resource_name: "{{ item.resource_name }}"
+  with_items:
+    - "{{ openshift_system_account_sccs }}"
+
+- name: Ensure the CFME system accounts have the required roles
+  oc_adm_policy_user:
+    namespace: "{{ openshift_cfme_project }}"
+    user: "system:serviceaccount:{{ openshift_cfme_project }}:{{ item.name }}"
+    resource_kind: role
+    resource_name: "{{ item.resource_name }}"
+  with_items:
+    - "{{ openshift_cfme_system_account_roles }}"
