@@ -40,6 +40,8 @@
   when: openshift_cfme_storage_class == 'nfs'
 
 
+- name: Install the CFME app templates
+  include: template.yml
 
 
 

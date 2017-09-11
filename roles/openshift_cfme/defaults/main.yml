@@ -24,10 +24,19 @@ openshift_cfme_system_account_roles:
 # openshift_cfme_db_type - ENUM - One of 'podified' or 'external'
 # * podified - PostgreSQL db runs in local pod using a PV
 # * external - PostgreSQL db is already running on another server.
-openshift_cfme_db_type: podifiedd
+openshift_cfme_db_type: podified
 
 # Allowed options presently: nfs, external, preconfigured, cloudprovider
 openshift_cfme_storage_class: nfs
+
+# Name of the application templates with object/parameter definitions
+openshift_cfme_app_templates:
+  - miq-template-ext-db.yaml
+  - miq-template.yaml
+
+# A hash of parameters you want to override or set in the
+# miq-template.yaml or miq-template-ext-db.yaml templates
+openshift_cfme_template_parameters:
 
 
 # # All the required exports

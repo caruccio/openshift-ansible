@@ -1,0 +1,39 @@
+---
+# Tasks for ensuring the correct CFME templates are landed on the remote system
+
+######################################################################
+# CFME App Template
+#
+# Note, this is different from the create_pvs.yml tasks in that the
+# application template does not require any jinja2 evaluation.
+#
+# TODO: Handle the case where the server template is updated in
+# openshift-ansible and the change needs to be landed on the managed
+# cluster.
+
+# - name: Check if the CFME Server template has been created already
+#   oc_obj:
+#     namespace: "{{ openshift_cfme_project }}"
+#     state: list
+#     kind: template
+#     name: manageiq
+#   register: miq_server_check
+
+- name: Copy over CFME Server templates
+  copy:
+    src: miq-template.yaml
+    dest: "{{ template_dir }}/{{ item }}"
+  with_items:
+     - "{{ openshift_cfme_app_templates }}"
+
+# - name: Ensure the server template was read from disk
+#   debug:
+#     var=r_openshift_cfme_miq_template_content
+
+# - name: Ensure CFME Server Template exists
+#   oc_obj:
+#     namespace: "{{ openshift_cfme_project }}"
+#     kind: template
+#     name: "manageiq"
+#     state: present
+#     content: "{{ r_openshift_cfme_miq_template_content }}"

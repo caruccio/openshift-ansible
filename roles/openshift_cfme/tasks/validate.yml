@@ -1,0 +1,14 @@
+---
+# Validate configuration parameters passed to the openshift_cfme role
+
+- name: Ensure openshift_cfme_db_type is valid
+  assert:
+    that:
+      - openshift_cfme_db_type in ['podified', 'external']
+    msg: openshift_cfme_db_type must be one of 'podified' or 'external'
+
+- name: Ensure openshift_cfme_storage_class is a valid type
+  assert:
+    that:
+      - openshift_cfme_storage_class in ['nfs', 'external', 'preconfigured', 'cloudprovider']
+    msg: openshift_cfme_storage_class must be one of 'nfs', 'external', 'preconfigured', 'cloudprovider'
