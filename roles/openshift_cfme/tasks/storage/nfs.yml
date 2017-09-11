@@ -2,6 +2,10 @@
 # Tasks to statically provision NFS volumes
 # Include if not using dynamic volume provisioning
 
+- name: Note NFS Storage Type
+  debug:
+    msg: Setting up NFS storage, openshift_cfme_storage_class is 'nfs'
+
 - name: Set openshift_cfme_nfs_server fact
   when: openshift_cfme_nfs_server is not defined
   set_fact:

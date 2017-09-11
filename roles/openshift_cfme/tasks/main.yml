@@ -2,6 +2,9 @@
 ######################################################################)
 # Users, projects, and privileges
 
+- name: Run pre-install CFME validation checks
+  include: validate.yml
+
 - name: "Ensure the CFME '{{ openshift_cfme_project }}' namespace exists"
   oc_project:
     state: present
@@ -10,6 +13,37 @@
 
 - name: Create and Authorize CFME Accounts
   include: accounts.yml
+
+# storage
+# * nfs - set up NFS shares on the first master for a proof of concept type install
+# * preconfigured - don't do anything, assume it's all there ready to go
+# * cloudprovider - use an existing cloudprovider based storage
+# * external - NFS again, but pointing to a pre-configured NFS server
+
+- name: Create required NFS exports for CFME app storage
+  include: storage/nfs.yml
+  when: openshift_cfme_storage_class == 'nfs'
+
+- name: Note External NFS Storage Type
+  debug:
+    msg: Setting up external NFS storage, openshift_cfme_storage_class is 'external'
+  when: openshift_cfme_storage_class == 'nfs'
+
+- name: Note Preconfigured Storage Type
+  debug:
+    msg: Skipping storage configuration, openshift_cfme_storage_class is 'preconfigured'
+  when: openshift_cfme_storage_class == 'nfs'
+
+- name: Note Cloud Provider Storage Type
+  debug:
+    msg: Validating cloud provider storage type, openshift_cfme_storage_class is 'cloudprovider'
+  when: openshift_cfme_storage_class == 'nfs'
+
+
+
+
+
+
 
 
 # ######################################################################
@@ -97,11 +131,3 @@
 #   file:
 #     path: "{{ template_dir }}"
 #     state: absent
-
-# ######################################################################
-
-# - name: Status update
-#   debug:
-#     msg: >
-#       CFME has been deployed. Note that there will be a delay before
-#       it is fully initialized.

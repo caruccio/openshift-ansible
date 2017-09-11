@@ -3,10 +3,8 @@
 openshift_cfme_project: openshift-cfme
 # Namespace/project description
 openshift_cfme_project_description: ManageIQ - CloudForms Management Engine 4.6
-# [CONSTANT] Service Accounts
+# [CONSTANT] Service Account SSCs
 openshift_system_account_sccs:
-  - name: tim
-    resource_name: anyuid
   - name: miq-anyuid
     resource_name: anyuid
   - name: miq-orchestrator
@@ -16,32 +14,38 @@ openshift_system_account_sccs:
   - name: miq-sysadmin
     resource_name: miq-sysadmin
 
+# [CONSTANT] Service Account Roles
 openshift_cfme_system_account_roles:
   - name: miq-orchestrator
     resource_name: view
   - name: miq-orchestrator
     resource_name: edit
 
-# Allowed options presently: nfs, external, preconfigured
-openshift_cfme_storage_class: preconfigured
+# openshift_cfme_db_type - ENUM - One of 'podified' or 'external'
+# * podified - PostgreSQL db runs in local pod using a PV
+# * external - PostgreSQL db is already running on another server.
+openshift_cfme_db_type: podifiedd
+
+# Allowed options presently: nfs, external, preconfigured, cloudprovider
+openshift_cfme_storage_class: nfs
 
 
-# All the required exports
-openshift_cfme_pv_exports:
-  - miq-pv01
-  - miq-pv02
-  - miq-pv03
-# PV template files and their created object names
-openshift_cfme_pv_data:
-  - pv_name: miq-pv01
-    pv_template: miq-pv-db.yaml
-    pv_label: CFME DB PV
-  - pv_name: miq-pv02
-    pv_template: miq-pv-region.yaml
-    pv_label: CFME Region PV
-  - pv_name: miq-pv03
-    pv_template: miq-pv-server.yaml
-    pv_label: CFME Server PV
+# # All the required exports
+# openshift_cfme_pv_exports:
+#   - miq-pv01
+#   - miq-pv02
+#   - miq-pv03
+# # PV template files and their created object names
+# openshift_cfme_pv_data:
+#   - pv_name: miq-pv01
+#     pv_template: miq-pv-db.yaml
+#     pv_label: CFME DB PV
+#   - pv_name: miq-pv02
+#     pv_template: miq-pv-region.yaml
+#     pv_label: CFME Region PV
+#   - pv_name: miq-pv03
+#     pv_template: miq-pv-server.yaml
+#     pv_label: CFME Server PV
 
 # TODO: Refactor '_install_app' variable. This is just for testing but
 # maybe in the future it should control the entire yes/no for CFME.
