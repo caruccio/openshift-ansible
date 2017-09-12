@@ -15,7 +15,7 @@
 #     poll: 0
 
 - name: Setup CFME
-  hosts: oo_first_master
+  hosts: m01.example.com
   vars:
     r_openshift_cfme_miq_template_content: "{{ lookup('file', 'roles/openshift_cfme/files/miq-template.yaml') | from_yaml}}"
   pre_tasks:
